@@ -26,8 +26,8 @@ import {
   getMemes,
   getUserById,
 } from "../../api";
-import { Loader } from "../../components/loader";
-import { MemePicture } from "../../components/meme-picture";
+import { Loader } from "../../components/Loader";
+import { MemePicture } from "../../components/MemePicture";
 import { useAuthToken } from "../../helpers/authentication";
 
 export const MemeFeedPage: React.FC = () => {

@@ -13,8 +13,8 @@ import {
 import { Plus, Trash } from "@phosphor-icons/react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { MemeEditor } from "../../components/meme-editor";
-import type { MemePictureProps } from "../../components/meme-picture";
+import { MemeEditor } from "../../components/MemeEditor";
+import type { MemePictureProps } from "../../components/MemePicture";
 
 export const Route = createFileRoute("/_authentication/create")({
   component: CreateMemePage,

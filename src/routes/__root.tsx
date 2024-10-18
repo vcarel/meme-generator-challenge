@@ -1,7 +1,7 @@
 import { Button, Flex, HStack, Heading, Icon, StackDivider } from "@chakra-ui/react";
 import { Plus } from "@phosphor-icons/react";
 import { Link, Outlet, createRootRouteWithContext } from "@tanstack/react-router";
-import { UserDropdown } from "../components/user-dropdown";
+import { UserDropdown } from "../components/UserDropdown";
 import type { AuthenticationState } from "../contexts/authentication";
 import { useAuthentication } from "../helpers/authentication";
 
