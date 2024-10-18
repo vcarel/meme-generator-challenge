@@ -1,7 +1,7 @@
-import { useDropzone } from "react-dropzone";
-import { MemePicture, MemePictureProps } from "./meme-picture";
 import { AspectRatio, Box, Button, Flex, Icon, Text } from "@chakra-ui/react";
 import { Image, Pencil } from "@phosphor-icons/react";
+import { useDropzone } from "react-dropzone";
+import { MemePicture, type MemePictureProps } from "./meme-picture";
 
 export type MemeEditorProps = {
   onDrop: (file: File) => void;
@@ -10,13 +10,7 @@ export type MemeEditorProps = {
 
 function renderNoPicture() {
   return (
-    <Flex
-      flexDir="column"
-      width="full"
-      height="full"
-      alignItems="center"
-      justifyContent="center"
-    >
+    <Flex flexDir="column" width="full" height="full" alignItems="center" justifyContent="center">
       <Icon as={Image} color="black" boxSize={16} />
       <Text>Select a picture</Text>
       <Text color="gray.400" fontSize="sm">
@@ -28,14 +22,19 @@ function renderNoPicture() {
 
 function renderMemePicture(memePicture: MemePictureProps, open: () => void) {
   return (
-    <Box width="full" height="full" position="relative" __css={{
-      "&:hover .change-picture-button": {
-        display: "inline-block",
-      },
-      "& .change-picture-button": {
-        display: "none",
-      },
-    }}>
+    <Box
+      width="full"
+      height="full"
+      position="relative"
+      __css={{
+        "&:hover .change-picture-button": {
+          display: "inline-block",
+        },
+        "& .change-picture-button": {
+          display: "none",
+        },
+      }}
+    >
       <MemePicture {...memePicture} />
       <Button
         className="change-picture-button"
@@ -54,10 +53,7 @@ function renderMemePicture(memePicture: MemePictureProps, open: () => void) {
   );
 }
 
-export const MemeEditor: React.FC<MemeEditorProps> = ({
-  onDrop,
-  memePicture,
-}) => {
+export const MemeEditor: React.FC<MemeEditorProps> = ({ onDrop, memePicture }) => {
   const { getRootProps, getInputProps, open } = useDropzone({
     onDrop: (files: File[]) => {
       if (files.length === 0) {

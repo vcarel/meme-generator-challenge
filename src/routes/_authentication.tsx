@@ -1,13 +1,8 @@
-import {
-  createFileRoute,
-  Navigate,
-  Outlet,
-  useLocation,
-} from "@tanstack/react-router";
+import { Navigate, Outlet, createFileRoute, useLocation } from "@tanstack/react-router";
 import { useAuthentication } from "../helpers/authentication";
 
 export const Route = createFileRoute("/_authentication")({
-  component: Authentication
+  component: Authentication,
 });
 
 function Authentication() {

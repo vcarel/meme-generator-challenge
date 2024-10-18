@@ -1,17 +1,17 @@
 import {
+  Button,
   Flex,
   FormControl,
+  FormErrorMessage,
   FormLabel,
   Heading,
-  Text,
   Input,
-  Button,
-  FormErrorMessage,
+  Text,
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
-import { createFileRoute, Navigate } from "@tanstack/react-router";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { login, UnauthorizedError } from "../api";
+import { Navigate, createFileRoute } from "@tanstack/react-router";
+import { type SubmitHandler, useForm } from "react-hook-form";
+import { UnauthorizedError, login } from "../api";
 import { useAuthentication } from "../helpers/authentication";
 
 type SearchParams = {
@@ -27,11 +27,7 @@ function renderError(error: Error) {
   if (error instanceof UnauthorizedError) {
     return <FormErrorMessage>Wrong credentials</FormErrorMessage>;
   }
-  return (
-    <FormErrorMessage>
-      An unknown error occured, please try again later
-    </FormErrorMessage>
-  );
+  return <FormErrorMessage>An unknown error occured, please try again later</FormErrorMessage>;
 }
 
 export const LoginPage: React.FC = () => {
@@ -41,7 +37,7 @@ export const LoginPage: React.FC = () => {
     mutationFn: (data: Inputs) => login(data.username, data.password),
     onSuccess: ({ jwt }) => {
       authenticate(jwt);
-    }
+    },
   });
   const { register, handleSubmit } = useForm<Inputs>();
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
@@ -49,16 +45,11 @@ export const LoginPage: React.FC = () => {
   };
 
   if (state.isAuthenticated) {
-    return <Navigate to={redirect ?? '/'} />;
+    return <Navigate to={redirect ?? "/"} />;
   }
 
   return (
-    <Flex
-      height="full"
-      width="full"
-      alignItems="center"
-      justifyContent="center"
-    >
+    <Flex height="full" width="full" alignItems="center" justifyContent="center">
       <Flex
         direction="column"
         bgGradient="linear(to-br, cyan.100, cyan.200)"
@@ -116,7 +107,7 @@ export const Route = createFileRoute("/login")({
   validateSearch: (search): SearchParams => {
     return {
       redirect: typeof search.redirect === "string" ? search.redirect : undefined,
-    }
+    };
   },
   component: LoginPage,
 });

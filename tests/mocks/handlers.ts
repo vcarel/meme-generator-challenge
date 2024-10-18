@@ -31,7 +31,7 @@ const memes = [
     ],
     createdAt: "2021-09-01T12:00:00Z",
   },
-]
+];
 
 const comments = [
   {
@@ -55,7 +55,7 @@ const comments = [
     content: "dummy comment 3",
     createdAt: "2021-09-01T12:00:00Z",
   },
-]
+];
 
 export const handlers = [
   http.post<Record<string, never>, { username: string; password: string }>(
@@ -99,9 +99,7 @@ export const handlers = [
   http.get<{ id: string }>(
     "https://fetestapi.int.mozzaik365.net/api/memes/:id/comments",
     async ({ params }) => {
-      const memeComments = comments.filter(
-        (comment) => comment.memeId === params.id,
-      );
+      const memeComments = comments.filter((comment) => comment.memeId === params.id);
       return HttpResponse.json({
         total: memeComments.length,
         pageSize: memeComments.length,

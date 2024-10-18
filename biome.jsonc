@@ -1,0 +1,46 @@
+{
+  "$schema": "https://biomejs.dev/schemas/1.9.2/schema.json",
+  "files": {
+    "ignore": [
+      ".DS_Store",
+      ".idea",
+      ".tmp",
+      ".vite",
+      ".vscode",
+      "coverage",
+      "dist",
+      "node_modules",
+      "routeTree.gen.ts",
+      "tsconfig.app.json"
+    ]
+  },
+  "organizeImports": {
+    "enabled": true
+  },
+  "formatter": {
+    "indentStyle": "space",
+    "indentWidth": 2,
+    "lineWidth": 100
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "recommended": true,
+      "a11y": {
+        "useMediaCaption": "off"
+      },
+      "correctness": {
+        "noUnusedVariables": "warn",
+        "noUnusedImports": "warn",
+        "noUnknownFunction": "off"
+      },
+      "suspicious": {
+        "noArrayIndexKey": "off",
+        "noExplicitAny": "off"
+      },
+      "nursery": {
+        "useSortedClasses": { "level": "warn", "fix": "safe", "options": {} }
+      }
+    }
+  }
+}

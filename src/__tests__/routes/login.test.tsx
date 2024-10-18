@@ -1,14 +1,11 @@
-import { vi } from "vitest";
-import { act, fireEvent, waitFor, screen } from "@testing-library/react";
-import { renderWithRouter } from "../utils";
-import { LoginPage } from "../../routes/login";
-import {
-  AuthenticationContext,
-  AuthenticationState,
-} from "../../contexts/authentication";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ChakraProvider } from "@chakra-ui/react";
-import { ListenerFn, RouterEvents } from "@tanstack/react-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import type { ListenerFn, RouterEvents } from "@tanstack/react-router";
+import { act, fireEvent, screen, waitFor } from "@testing-library/react";
+import { vi } from "vitest";
+import { AuthenticationContext, type AuthenticationState } from "../../contexts/authentication";
+import { LoginPage } from "../../routes/login";
+import { renderWithRouter } from "../utils";
 
 type RenderLoginPageParams = {
   authenticate?: (token: string) => void;

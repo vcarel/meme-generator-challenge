@@ -2,19 +2,19 @@ import {
   Box,
   Button,
   Flex,
-  Heading,
   HStack,
+  Heading,
   Icon,
   IconButton,
   Input,
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { MemeEditor } from "../../components/meme-editor";
-import { useMemo, useState } from "react";
-import { MemePictureProps } from "../../components/meme-picture";
 import { Plus, Trash } from "@phosphor-icons/react";
+import { Link, createFileRoute } from "@tanstack/react-router";
+import { useMemo, useState } from "react";
+import { MemeEditor } from "../../components/meme-editor";
+import type { MemePictureProps } from "../../components/meme-picture";
 
 export const Route = createFileRoute("/_authentication/create")({
   component: CreateMemePage,
@@ -80,20 +80,14 @@ function CreateMemePage() {
           </Box>
         </VStack>
       </Box>
-      <Flex
-        flexDir="column"
-        width="30%"
-        minW="250"
-        height="full"
-        boxShadow="lg"
-      >
+      <Flex flexDir="column" width="30%" minW="250" height="full" boxShadow="lg">
         <Heading as="h2" size="md" mb={2} p={4}>
           Add your captions
         </Heading>
         <Box p={4} flexGrow={1} height={0} overflowY="auto">
           <VStack>
             {texts.map((text, index) => (
-              <Flex width="full">
+              <Flex key={index} width="full">
                 <Input key={index} value={text.content} mr={1} />
                 <IconButton
                   onClick={() => handleDeleteCaptionButtonClick(index)}
@@ -116,14 +110,7 @@ function CreateMemePage() {
           </VStack>
         </Box>
         <HStack p={4}>
-          <Button
-            as={Link}
-            to="/"
-            colorScheme="cyan"
-            variant="outline"
-            size="sm"
-            width="full"
-          >
+          <Button as={Link} to="/" colorScheme="cyan" variant="outline" size="sm" width="full">
             Cancel
           </Button>
           <Button

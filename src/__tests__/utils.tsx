@@ -1,8 +1,7 @@
-import React, { PropsWithChildren, type FC } from "react";
 import {
-  ListenerFn,
+  type ListenerFn,
   Outlet,
-  RouterEvents,
+  type RouterEvents,
   RouterProvider,
   createMemoryHistory,
   createRootRouteWithContext,
@@ -10,8 +9,9 @@ import {
   createRouter,
 } from "@tanstack/react-router";
 import { render } from "@testing-library/react";
-import type { RouterContext } from "../routes/__root";
+import React, { type PropsWithChildren, type FC } from "react";
 import type { routeTree } from "../routeTree.gen";
+import type { RouterContext } from "../routes/__root";
 
 function createTestRouter(component: FC, currentUrl: string) {
   const rootRoute = createRootRouteWithContext<RouterContext>()({
@@ -36,7 +36,7 @@ function createTestRouter(component: FC, currentUrl: string) {
 type RenderWithRouterParams = {
   component: FC;
   Wrapper?: React.ComponentType<PropsWithChildren>;
-  onNavigate?: ListenerFn<RouterEvents['onBeforeNavigate']>;
+  onNavigate?: ListenerFn<RouterEvents["onBeforeNavigate"]>;
   currentUrl?: string;
 };
 
@@ -44,13 +44,13 @@ export function renderWithRouter({
   component,
   Wrapper = React.Fragment,
   onNavigate = () => {},
-  currentUrl = "/"
+  currentUrl = "/",
 }: RenderWithRouterParams) {
   const router = createTestRouter(component, currentUrl);
-  router.subscribe('onBeforeNavigate', onNavigate);
+  router.subscribe("onBeforeNavigate", onNavigate);
   const renderResult = render(
     <Wrapper>
-      <RouterProvider router={router} />;
+      <RouterProvider router={router} />
     </Wrapper>,
   );
 

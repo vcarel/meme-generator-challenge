@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "biome check --error-on-warnings",
+    "lintfix": "biome check --error-on-warnings --fix",
     "check-types": "tsc -b --incremental && echo -e \"Typescript validation \\033[0;32mpassed\\033[0m\"",
     "preview": "vite preview",
     "test": "vitest",
@@ -30,6 +31,7 @@
     "timeago.js": "^4.0.2"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.9.4",
     "@tanstack/router-devtools": "^1.46.0",
     "@tanstack/router-plugin": "^1.45.13",
     "@testing-library/jest-dom": "^6.4.8",
@@ -37,13 +39,8 @@
     "@types/jest": "^29.5.12",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^7.15.0",
-    "@typescript-eslint/parser": "^7.15.0",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "@vitest/coverage-v8": "^2.0.5",
-    "eslint": "^8.57.0",
-    "eslint-plugin-react-hooks": "^4.6.2",
-    "eslint-plugin-react-refresh": "^0.4.7",
     "jsdom": "^24.1.1",
     "msw": "^2.3.5",
     "typescript": "^5.2.2",
