@@ -7,9 +7,11 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "check-types": "tsc -b --incremental && echo -e \"Typescript validation \\033[0;32mpassed\\033[0m\"",
     "preview": "vite preview",
     "test": "vitest",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "postinstall": "rm -f tsconfig.tsbuildinfo"
   },
   "dependencies": {
     "@chakra-ui/anatomy": "^2.2.2",
