@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { jwtDecode } from "jwt-decode";
 import { getUserById, login } from "../api";
 import { useAuthToken, useAuthentication } from "../helpers/authentication";
@@ -6,7 +6,7 @@ import { useAuthToken, useAuthentication } from "../helpers/authentication";
 export const useUser = () => {
   const token = useAuthToken();
 
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ["user"],
     queryFn: async () => await getUserById(token, jwtDecode<{ id: string }>(token).id),
   });

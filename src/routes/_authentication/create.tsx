@@ -13,12 +13,9 @@ import {
 import { Plus, Trash } from "@phosphor-icons/react";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
+import { Loader } from "../../components/Loader";
 import { MemeEditor } from "../../components/MemeEditor";
 import type { MemePictureProps } from "../../components/MemePicture";
-
-export const Route = createFileRoute("/_authentication/create")({
-  component: CreateMemePage,
-});
 
 type Picture = {
   url: string;
@@ -127,3 +124,8 @@ function CreateMemePage() {
     </Flex>
   );
 }
+
+export const Route = createFileRoute("/_authentication/create")({
+  component: CreateMemePage,
+  pendingComponent: Loader,
+});

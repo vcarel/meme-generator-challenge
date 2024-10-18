@@ -11,6 +11,7 @@ import {
 import { Navigate, createFileRoute } from "@tanstack/react-router";
 import { type SubmitHandler, useForm } from "react-hook-form";
 import { UnauthorizedError } from "../api";
+import { Loader } from "../components/Loader";
 import { useAuthentication } from "../helpers/authentication";
 import { useLoginUser } from "../queries/user";
 
@@ -107,4 +108,5 @@ export const Route = createFileRoute("/login")({
     };
   },
   component: LoginPage,
+  pendingComponent: Loader,
 });

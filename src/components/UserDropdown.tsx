@@ -5,11 +5,7 @@ import { useUser } from "../queries/user";
 
 export const UserDropdown: React.FC = () => {
   const { signout } = useAuthentication();
-  const { data: user, isLoading } = useUser();
-
-  if (isLoading) {
-    return null;
-  }
+  const { data: user } = useUser();
 
   return (
     <Menu>
@@ -20,11 +16,11 @@ export const UserDropdown: React.FC = () => {
               <Avatar
                 size="xs"
                 mr={2}
-                name={user?.username}
-                src={user?.pictureUrl}
+                name={user.username}
+                src={user.pictureUrl}
                 border="1px solid white"
               />
-              <Text color="white">{user?.username}</Text>
+              <Text color="white">{user.username}</Text>
               <Icon color="white" ml={2} as={isOpen ? CaretUp : CaretDown} mt={1} />
             </Flex>
           </MenuButton>

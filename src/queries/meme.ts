@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import {
   type GetMemeCommentsResponse,
   type GetMemesResponse,
@@ -13,7 +13,7 @@ import { useAuthToken } from "../helpers/authentication";
 export const useMemeList = () => {
   const token = useAuthToken();
 
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: ["memes"],
     queryFn: async () => {
       const memes: GetMemesResponse["results"] = [];

@@ -21,17 +21,13 @@ import { useCreateMemeComment, useMemeList } from "../../queries/meme";
 import { useUser } from "../../queries/user";
 
 export const MemeFeedPage: React.FC = () => {
-  const { isLoading, data: memes } = useMemeList();
+  const { data: memes } = useMemeList();
   const { data: user } = useUser();
   const [openedCommentSection, setOpenedCommentSection] = useState<string | null>(null);
   const [commentContent, setCommentContent] = useState<{
     [key: string]: string;
   }>({});
   const { mutateAsync: createMemeComment } = useCreateMemeComment();
-
-  if (isLoading) {
-    return <Loader data-testid="meme-feed-loader" />;
-  }
 
   return (
     <Flex width="full" height="full" justifyContent="center" overflowY="auto">
@@ -116,8 +112,8 @@ export const MemeFeedPage: React.FC = () => {
                       <Avatar
                         borderWidth="1px"
                         borderColor="gray.300"
-                        name={user?.username}
-                        src={user?.pictureUrl}
+                        name={user.username}
+                        src={user.pictureUrl}
                         size="sm"
                         mr={2}
                       />
@@ -178,4 +174,5 @@ export const MemeFeedPage: React.FC = () => {
 
 export const Route = createFileRoute("/_authentication/")({
   component: MemeFeedPage,
+  pendingComponent: Loader,
 });

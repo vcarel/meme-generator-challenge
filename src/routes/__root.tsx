@@ -5,14 +5,6 @@ import { UserDropdown } from "../components/UserDropdown";
 import type { AuthenticationState } from "../contexts/authentication";
 import { useAuthentication } from "../helpers/authentication";
 
-export type RouterContext = {
-  authState: AuthenticationState;
-};
-
-export const Route = createRootRouteWithContext<RouterContext>()({
-  component: Root,
-});
-
 function Root() {
   const { state } = useAuthentication();
   return (
@@ -38,3 +30,11 @@ function Root() {
     </Flex>
   );
 }
+
+export type RouterContext = {
+  authState: AuthenticationState;
+};
+
+export const Route = createRootRouteWithContext<RouterContext>()({
+  component: Root,
+});

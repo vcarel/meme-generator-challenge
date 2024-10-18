@@ -1,10 +1,6 @@
 import { Navigate, Outlet, createFileRoute, useLocation } from "@tanstack/react-router";
 import { useAuthentication } from "../helpers/authentication";
 
-export const Route = createFileRoute("/_authentication")({
-  component: Authentication,
-});
-
 function Authentication() {
   const { state } = useAuthentication();
   const { pathname } = useLocation();
@@ -15,3 +11,7 @@ function Authentication() {
 
   return <Outlet />;
 }
+
+export const Route = createFileRoute("/_authentication")({
+  component: Authentication,
+});
