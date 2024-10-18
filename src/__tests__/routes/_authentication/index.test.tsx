@@ -1,7 +1,8 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { screen, waitFor } from "@testing-library/react";
 import { AuthenticationContext } from "../../../contexts/authentication";
+import { queryClient } from "../../../queries/client";
 import { MemeFeedPage } from "../../../routes/_authentication/index";
 import { renderWithRouter } from "../../utils";
 
@@ -12,12 +13,12 @@ describe("routes/_authentication/index", () => {
         component: MemeFeedPage,
         Wrapper: ({ children }) => (
           <ChakraProvider>
-            <QueryClientProvider client={new QueryClient()}>
+            <QueryClientProvider client={queryClient}>
               <AuthenticationContext.Provider
                 value={{
                   state: {
                     isAuthenticated: true,
-                    userId: "dummy_user_id",
+                    userId: "dummy_user_id_1",
                     token: "dummy_token",
                   },
                   authenticate: () => {},

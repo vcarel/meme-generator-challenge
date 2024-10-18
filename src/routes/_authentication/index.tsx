@@ -1,6 +1,7 @@
 import {
   Avatar,
   Box,
+  Button,
   Collapse,
   Flex,
   Icon,
@@ -17,11 +18,12 @@ import { useState } from "react";
 import { format } from "timeago.js";
 import { Loader } from "../../components/Loader";
 import { MemePicture } from "../../components/MemePicture";
-import { useCreateMemeComment, useMemeList } from "../../queries/meme";
+import { useCreateMemeComment, usePaginatedMemeList } from "../../queries/meme";
 import { useUser } from "../../queries/user";
 
 export const MemeFeedPage: React.FC = () => {
-  const { data: memes } = useMemeList();
+  const { data: paginatedMemeList, fetchNextPage, isFetchingNextPage } = usePaginatedMemeList();
+  const memes = [...paginatedMemeList.pages.flatMap((page) => page.results)];
   const { data: user } = useUser();
   const [openedCommentSection, setOpenedCommentSection] = useState<string | null>(null);
   const [commentContent, setCommentContent] = useState<{
@@ -167,6 +169,12 @@ export const MemeFeedPage: React.FC = () => {
             </VStack>
           );
         })}
+
+        <Box mt={8} pb={16}>
+          <Button isLoading={isFetchingNextPage} size="sm" onClick={() => fetchNextPage()}>
+            Show more memes
+          </Button>
+        </Box>
       </VStack>
     </Flex>
   );

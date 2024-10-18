@@ -97,7 +97,7 @@ export type GetMemesResponse = {
  * @param page
  * @returns
  */
-export async function getMemes(token: string, page: number): Promise<GetMemesResponse> {
+export async function getMemePage(token: string, page: number): Promise<GetMemesResponse> {
   return await fetch(`${BASE_URL}/memes?page=${page}`, {
     headers: {
       "Content-Type": "application/json",

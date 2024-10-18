@@ -1,9 +1,10 @@
 import { ChakraProvider } from "@chakra-ui/react";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import type { ListenerFn, RouterEvents } from "@tanstack/react-router";
 import { act, fireEvent, screen, waitFor } from "@testing-library/react";
 import { vi } from "vitest";
 import { AuthenticationContext, type AuthenticationState } from "../../contexts/authentication";
+import { queryClient } from "../../queries/client";
 import { LoginPage } from "../../routes/login";
 import { renderWithRouter } from "../utils";
 
@@ -28,7 +29,7 @@ describe("routes/login", () => {
         component: LoginPage,
         Wrapper: ({ children }) => (
           <ChakraProvider>
-            <QueryClientProvider client={new QueryClient()}>
+            <QueryClientProvider client={queryClient}>
               <AuthenticationContext.Provider
                 value={{
                   state: authState,

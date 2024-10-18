@@ -1,14 +1,30 @@
 import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { jwtDecode } from "jwt-decode";
-import { getUserById, login } from "../api";
-import { useAuthToken, useAuthentication } from "../helpers/authentication";
+import { type GetUserByIdResponse, getUserById, login } from "../api";
+import { useAuthentication } from "../helpers/authentication";
+import { queryClient } from "./client";
+
+export const getCachedUser = async (token: string, userId: string) => {
+  let user = queryClient.getQueryData<GetUserByIdResponse>(["user", userId]);
+
+  if (!user) {
+    user = await getUserById(token, userId);
+    queryClient.setQueryData(["user", userId], user);
+  }
+
+  return user;
+};
 
 export const useUser = () => {
-  const token = useAuthToken();
+  const { state } = useAuthentication();
+
+  if (!state.isAuthenticated) {
+    throw new Error("User is not authenticated");
+  }
 
   return useSuspenseQuery({
-    queryKey: ["user"],
-    queryFn: async () => await getUserById(token, jwtDecode<{ id: string }>(token).id),
+    queryKey: ["user", state.userId],
+    queryFn: async () => await getUserById(state.token, jwtDecode<{ id: string }>(state.token).id),
   });
 };
 
