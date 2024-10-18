@@ -8,19 +8,14 @@ import {
   Input,
   Text,
 } from "@chakra-ui/react";
-import { useMutation } from "@tanstack/react-query";
 import { Navigate, createFileRoute } from "@tanstack/react-router";
 import { type SubmitHandler, useForm } from "react-hook-form";
-import { UnauthorizedError, login } from "../api";
+import { UnauthorizedError } from "../api";
 import { useAuthentication } from "../helpers/authentication";
+import { useLoginUser } from "../queries/user";
 
 type SearchParams = {
   redirect?: string;
-};
-
-type Inputs = {
-  username: string;
-  password: string;
 };
 
 function renderError(error: Error) {
@@ -30,18 +25,20 @@ function renderError(error: Error) {
   return <FormErrorMessage>An unknown error occured, please try again later</FormErrorMessage>;
 }
 
+type Form = {
+  username: string;
+  password: string;
+};
+
 export const LoginPage: React.FC = () => {
   const { redirect } = Route.useSearch();
-  const { state, authenticate } = useAuthentication();
-  const { mutate, isPending, error } = useMutation({
-    mutationFn: (data: Inputs) => login(data.username, data.password),
-    onSuccess: ({ jwt }) => {
-      authenticate(jwt);
-    },
-  });
-  const { register, handleSubmit } = useForm<Inputs>();
-  const onSubmit: SubmitHandler<Inputs> = async (data) => {
-    mutate(data);
+  const { state } = useAuthentication();
+  const { mutate: loginUser, isPending, error } = useLoginUser();
+  const { register, handleSubmit } = useForm<Form>();
+
+  const onSubmit: SubmitHandler<Form> = async (data) => {
+    // FIXME: Handle errors
+    loginUser(data);
   };
 
   if (state.isAuthenticated) {

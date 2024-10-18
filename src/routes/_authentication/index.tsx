@@ -12,83 +12,27 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { CaretDown, CaretUp, Chat } from "@phosphor-icons/react";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { jwtDecode } from "jwt-decode";
 import { useState } from "react";
 import { format } from "timeago.js";
-import {
-  type GetMemeCommentsResponse,
-  type GetMemesResponse,
-  type GetUserByIdResponse,
-  createMemeComment,
-  getMemeComments,
-  getMemes,
-  getUserById,
-} from "../../api";
 import { Loader } from "../../components/Loader";
 import { MemePicture } from "../../components/MemePicture";
-import { useAuthToken } from "../../helpers/authentication";
+import { useCreateMemeComment, useMemeList } from "../../queries/meme";
+import { useUser } from "../../queries/user";
 
 export const MemeFeedPage: React.FC = () => {
-  const token = useAuthToken();
-  const { isLoading, data: memes } = useQuery({
-    queryKey: ["memes"],
-    queryFn: async () => {
-      const memes: GetMemesResponse["results"] = [];
-      const firstPage = await getMemes(token, 1);
-      memes.push(...firstPage.results);
-      // const remainingPages =
-      //   Math.ceil(firstPage.total / firstPage.pageSize) - 1;
-      // for (let i = 0; i < remainingPages; i++) {
-      //   const page = await getMemes(token, i + 2);
-      //   memes.push(...page.results);
-      // }
-      const memesWithAuthorAndComments = [];
-      for (const meme of memes) {
-        const author = await getUserById(token, meme.authorId);
-        const comments: GetMemeCommentsResponse["results"] = [];
-        const firstPage = await getMemeComments(token, meme.id, 1);
-        comments.push(...firstPage.results);
-        const remainingCommentPages = Math.ceil(firstPage.total / firstPage.pageSize) - 1;
-        for (let i = 0; i < remainingCommentPages; i++) {
-          const page = await getMemeComments(token, meme.id, i + 2);
-          comments.push(...page.results);
-        }
-        const commentsWithAuthor: (GetMemeCommentsResponse["results"][0] & {
-          author: GetUserByIdResponse;
-        })[] = [];
-        for (const comment of comments) {
-          const author = await getUserById(token, comment.authorId);
-          commentsWithAuthor.push({ ...comment, author });
-        }
-        memesWithAuthorAndComments.push({
-          ...meme,
-          author,
-          comments: commentsWithAuthor,
-        });
-      }
-      return memesWithAuthorAndComments;
-    },
-  });
-  const { data: user } = useQuery({
-    queryKey: ["user"],
-    queryFn: async () => {
-      return await getUserById(token, jwtDecode<{ id: string }>(token).id);
-    },
-  });
+  const { isLoading, data: memes } = useMemeList();
+  const { data: user } = useUser();
   const [openedCommentSection, setOpenedCommentSection] = useState<string | null>(null);
   const [commentContent, setCommentContent] = useState<{
     [key: string]: string;
   }>({});
-  const { mutate } = useMutation({
-    mutationFn: async (data: { memeId: string; content: string }) => {
-      await createMemeComment(token, data.memeId, data.content);
-    },
-  });
+  const { mutateAsync: createMemeComment } = useCreateMemeComment();
+
   if (isLoading) {
     return <Loader data-testid="meme-feed-loader" />;
   }
+
   return (
     <Flex width="full" height="full" justifyContent="center" overflowY="auto">
       <VStack p={4} width="full" maxWidth={800} divider={<StackDivider border="gray.200" />}>
@@ -160,7 +104,8 @@ export const MemeFeedPage: React.FC = () => {
                     onSubmit={(event) => {
                       event.preventDefault();
                       if (commentContent[meme.id]) {
-                        mutate({
+                        // FIXME: Handle errors
+                        createMemeComment({
                           memeId: meme.id,
                           content: commentContent[meme.id],
                         });

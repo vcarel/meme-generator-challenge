@@ -12,6 +12,12 @@ export class NotFoundError extends Error {
   }
 }
 
+export class ServerError extends Error {
+  constructor() {
+    super("Server Error");
+  }
+}
+
 function checkStatus(response: Response) {
   if (response.status === 401) {
     throw new UnauthorizedError();
@@ -19,6 +25,10 @@ function checkStatus(response: Response) {
   if (response.status === 404) {
     throw new NotFoundError();
   }
+  if (response.status >= 500) {
+    throw new ServerError();
+  }
+
   return response;
 }
 
