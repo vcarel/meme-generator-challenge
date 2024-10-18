@@ -38,12 +38,12 @@ export const MemeFeedPage: React.FC = () => {
       const memes: GetMemesResponse["results"] = [];
       const firstPage = await getMemes(token, 1);
       memes.push(...firstPage.results);
-      const remainingPages =
-        Math.ceil(firstPage.total / firstPage.pageSize) - 1;
-      for (let i = 0; i < remainingPages; i++) {
-        const page = await getMemes(token, i + 2);
-        memes.push(...page.results);
-      }
+      // const remainingPages =
+      //   Math.ceil(firstPage.total / firstPage.pageSize) - 1;
+      // for (let i = 0; i < remainingPages; i++) {
+      //   const page = await getMemes(token, i + 2);
+      //   memes.push(...page.results);
+      // }
       const memesWithAuthorAndComments = [];
       for (let meme of memes) {
         const author = await getUserById(token, meme.authorId);
