@@ -10,8 +10,8 @@ import {
 } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import { CaretDown, CaretUp, SignOut } from "@phosphor-icons/react";
-import { useAuthentication } from "../contexts/authentication";
 import { getUserById } from "../api";
+import { useAuthentication } from "../helpers/authentication";
 
 export const UserDropdown: React.FC = () => {
   const { state, signout } = useAuthentication();

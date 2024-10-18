@@ -58,7 +58,7 @@ const comments = [
 ]
 
 export const handlers = [
-  http.post<{}, { username: string; password: string }>(
+  http.post<Record<string, never>, { username: string; password: string }>(
     "https://fetestapi.int.mozzaik365.net/api/authentication/login",
     async ({ request }) => {
       const { username, password } = await request.json();

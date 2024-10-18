@@ -12,7 +12,7 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { login, UnauthorizedError } from "../api";
-import { useAuthentication } from "../contexts/authentication";
+import { useAuthentication } from "../helpers/authentication";
 
 type SearchParams = {
   redirect?: string;

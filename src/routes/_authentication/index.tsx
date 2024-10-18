@@ -24,11 +24,11 @@ import {
   getUserById,
   GetUserByIdResponse,
 } from "../../api";
-import { useAuthToken } from "../../contexts/authentication";
 import { Loader } from "../../components/loader";
 import { MemePicture } from "../../components/meme-picture";
 import { useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import { useAuthToken } from "../../helpers/authentication";
 
 export const MemeFeedPage: React.FC = () => {
   const token = useAuthToken();
@@ -45,7 +45,7 @@ export const MemeFeedPage: React.FC = () => {
       //   memes.push(...page.results);
       // }
       const memesWithAuthorAndComments = [];
-      for (let meme of memes) {
+      for (const meme of memes) {
         const author = await getUserById(token, meme.authorId);
         const comments: GetMemeCommentsResponse["results"] = [];
         const firstPage = await getMemeComments(token, meme.id, 1);
@@ -59,7 +59,7 @@ export const MemeFeedPage: React.FC = () => {
         const commentsWithAuthor: (GetMemeCommentsResponse["results"][0] & {
           author: GetUserByIdResponse;
         })[] = [];
-        for (let comment of comments) {
+        for (const comment of comments) {
           const author = await getUserById(token, comment.authorId);
           commentsWithAuthor.push({ ...comment, author });
         }

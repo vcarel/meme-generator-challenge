@@ -1,3 +1,5 @@
+/* eslint-disable react-refresh/only-export-components */
+
 import { StrictMode } from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
@@ -7,10 +9,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Import the generated route tree
 import { routeTree } from "./routeTree.gen";
-import {
-  AuthenticationProvider,
-  useAuthentication,
-} from "./contexts/authentication";
+import { AuthenticationProvider } from "./contexts/authentication";
+import { useAuthentication } from "./helpers/authentication";
 
 // Create a new router instance
 const router = createRouter({

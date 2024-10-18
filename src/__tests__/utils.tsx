@@ -1,18 +1,20 @@
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, type FC } from "react";
 import {
   ListenerFn,
   Outlet,
   RouterEvents,
   RouterProvider,
   createMemoryHistory,
-  createRootRoute,
+  createRootRouteWithContext,
   createRoute,
   createRouter,
 } from "@tanstack/react-router";
 import { render } from "@testing-library/react";
+import type { RouterContext } from "../routes/__root";
+import type { routeTree } from "../routeTree.gen";
 
-function createTestRouter(component: (...args: any) => React.ReactNode, currentUrl: string) {
-  const rootRoute = createRootRoute({
+function createTestRouter(component: FC, currentUrl: string) {
+  const rootRoute = createRootRouteWithContext<RouterContext>()({
     component: Outlet,
   });
 
@@ -23,7 +25,8 @@ function createTestRouter(component: (...args: any) => React.ReactNode, currentU
   });
 
   const router = createRouter({
-    routeTree: rootRoute.addChildren([componentRoute]),
+    context: { authState: { isAuthenticated: false } },
+    routeTree: rootRoute.addChildren([componentRoute]) as unknown as typeof routeTree, // See https://github.com/TanStack/router/issues/1745
     history: createMemoryHistory({ initialEntries: [currentUrl] }),
   });
 
@@ -31,7 +34,7 @@ function createTestRouter(component: (...args: any) => React.ReactNode, currentU
 }
 
 type RenderWithRouterParams = {
-  component: (...args: any) => React.ReactNode;
+  component: FC;
   Wrapper?: React.ComponentType<PropsWithChildren>;
   onNavigate?: ListenerFn<RouterEvents['onBeforeNavigate']>;
   currentUrl?: string;
@@ -47,7 +50,6 @@ export function renderWithRouter({
   router.subscribe('onBeforeNavigate', onNavigate);
   const renderResult = render(
     <Wrapper>
-      {/* @ts-expect-error */}
       <RouterProvider router={router} />;
     </Wrapper>,
   );
