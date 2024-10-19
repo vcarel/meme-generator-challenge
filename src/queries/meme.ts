@@ -1,14 +1,32 @@
-import { useMutation, useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
-import {
-  type GetMemeCommentsResponse,
-  type GetMemesResponse,
-  type GetUserByIdResponse,
-  createMemeComment,
-  getMemeComments,
-  getMemePage,
-} from "../api";
+import { useMutation, useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import { createMemeComment, getMemeComments, getMemePage } from "../api";
 import { useAuthToken } from "../helpers/authentication";
-import { getCachedUser } from "./user";
+import { cachedGetUser } from "./user";
+
+const getCommentsWithAuthors = async (token: string, memeId: string) => {
+  // First, load raw comments using paralleled fetches
+  const firstPage = await getMemeComments(token, memeId, 1);
+  const pageCount = Math.ceil(firstPage.total / firstPage.pageSize);
+  const nextPages = await Promise.all(
+    Array.from({ length: pageCount - 1 }, (_, i) => 2 + i).map((i) =>
+      getMemeComments(token, memeId, i),
+    ),
+  );
+
+  const comments = [firstPage, ...nextPages].flatMap((page) => page.results);
+
+  // Load all authors in react-query cache
+  const authorIds = Array.from(new Set(comments.map((comment) => comment.authorId)));
+  await Promise.all(authorIds.map((id) => cachedGetUser(token, id)));
+
+  // Then map authors in comments
+  return Promise.all(
+    comments.map(async (comment) => ({
+      ...comment,
+      author: await cachedGetUser(token, comment.authorId),
+    })),
+  );
+};
 
 export const usePaginatedMemeList = () => {
   // To understand how getNextPageParam and getPreviousPageParam work, please read:
@@ -19,34 +37,15 @@ export const usePaginatedMemeList = () => {
   return useSuspenseInfiniteQuery({
     queryKey: ["memes"],
     queryFn: async ({ pageParam }) => {
-      const rawPage = await getMemePage(token, pageParam);
+      const page = await getMemePage(token, pageParam);
+
       return {
-        ...rawPage,
+        ...page,
         results: await Promise.all(
-          rawPage.results.map(async (meme) => {
-            const author = await getCachedUser(token, meme.authorId);
-
-            const comments: GetMemeCommentsResponse["results"] = [];
-            const firstCommentPage = await getMemeComments(token, meme.id, 1);
-            comments.push(...firstCommentPage.results);
-
-            const commentPageCount = Math.ceil(firstCommentPage.total / firstCommentPage.pageSize);
-
-            for (let i = 2; i <= commentPageCount; i++) {
-              const page = await getMemeComments(token, meme.id, i);
-              comments.push(...page.results);
-            }
-
-            const commentsWithAuthor: (GetMemeCommentsResponse["results"][0] & {
-              author: GetUserByIdResponse;
-            })[] = [];
-
-            for (const comment of comments) {
-              const author = await getCachedUser(token, comment.authorId);
-              commentsWithAuthor.push({ ...comment, author });
-            }
-
-            return { ...meme, author, comments: commentsWithAuthor };
+          page.results.map(async (meme) => {
+            const author = await cachedGetUser(token, meme.authorId);
+            const comments = await getCommentsWithAuthors(token, meme.id);
+            return { ...meme, author, comments };
           }),
         ),
       };

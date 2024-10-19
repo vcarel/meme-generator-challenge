@@ -4,7 +4,7 @@ import { type GetUserByIdResponse, getUserById, login } from "../api";
 import { useAuthentication } from "../helpers/authentication";
 import { queryClient } from "./client";
 
-export const getCachedUser = async (token: string, userId: string) => {
+export const cachedGetUser = async (token: string, userId: string) => {
   let user = queryClient.getQueryData<GetUserByIdResponse>(["user", userId]);
 
   if (!user) {
