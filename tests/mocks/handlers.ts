@@ -107,4 +107,25 @@ export const handlers = [
       });
     },
   ),
+  http.post<{ id: string }, { content: string }>(
+    "https://fetestapi.int.mozzaik365.net/api/memes/:id/comments",
+    async ({ params, request }) => {
+      const { content } = await request.json();
+      const lastId = Number(
+        comments
+          .map((comment) => comment.id.split("dummy_comment_id_").at(-1) ?? "0")
+          .sort()
+          .at(-1),
+      );
+
+      comments.push({
+        id: `dummy_comment_id_${lastId + 1}`,
+        content,
+        authorId: "dummy_user_id_1",
+        memeId: params.id,
+        createdAt: new Date().toISOString(),
+      });
+      return HttpResponse.json({});
+    },
+  ),
 ];

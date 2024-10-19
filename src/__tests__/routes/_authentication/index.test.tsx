@@ -1,6 +1,7 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
+import { act } from "react";
 import { AuthenticationContext } from "../../../contexts/authentication";
 import { queryClient } from "../../../queries/client";
 import { MemeFeedPage } from "../../../routes/_authentication/index";
@@ -90,6 +91,33 @@ describe("routes/_authentication/index", () => {
         expect(
           screen.getByTestId("meme-comment-author-dummy_meme_id_1-dummy_comment_id_3"),
         ).toHaveTextContent("dummy_user_3");
+      });
+    });
+
+    it("should fetch the memes and display them with their comments", async () => {
+      renderMemeFeedPage();
+
+      const commentInput = screen.getByPlaceholderText("Type your comment here...");
+
+      act(() => {
+        // Open the comment section
+        fireEvent.click(screen.getByTestId("meme-comments-section-dummy_meme_id_1"));
+
+        // Type in the comment input
+        fireEvent.change(commentInput, { target: { value: "This is a test comment" } });
+
+        // Submit the form
+        fireEvent.submit(screen.getByRole("form", { hidden: true }));
+      });
+
+      await waitFor(() => {
+        // Check that the comment has been inserted
+        expect(
+          screen.getByTestId("meme-comment-content-dummy_meme_id_1-dummy_comment_id_4"),
+        ).toHaveTextContent("This is a test comment");
+
+        // Check that the form was reset
+        expect(commentInput).toHaveValue("");
       });
     });
   });

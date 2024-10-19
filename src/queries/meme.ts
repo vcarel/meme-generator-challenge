@@ -1,32 +1,11 @@
-import { useMutation, useSuspenseInfiniteQuery } from "@tanstack/react-query";
+import { useMutation, useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { createMemeComment, getMemeComments, getMemePage } from "../api";
 import { useAuthToken } from "../helpers/authentication";
-import { cachedGetUser } from "./user";
+import { queryClient } from "./client";
 
-const getCommentsWithAuthors = async (token: string, memeId: string) => {
-  // First, load raw comments using paralleled fetches
-  const firstPage = await getMemeComments(token, memeId, 1);
-  const pageCount = Math.ceil(firstPage.total / firstPage.pageSize);
-  const nextPages = await Promise.all(
-    Array.from({ length: pageCount - 1 }, (_, i) => 2 + i).map((i) =>
-      getMemeComments(token, memeId, i),
-    ),
-  );
-
-  const comments = [firstPage, ...nextPages].flatMap((page) => page.results);
-
-  // Load all authors in react-query cache
-  const authorIds = Array.from(new Set(comments.map((comment) => comment.authorId)));
-  await Promise.all(authorIds.map((id) => cachedGetUser(token, id)));
-
-  // Then map authors in comments
-  return Promise.all(
-    comments.map(async (comment) => ({
-      ...comment,
-      author: await cachedGetUser(token, comment.authorId),
-    })),
-  );
-};
+// ----------------------------------------------------------------------------
+// Queries
+// ----------------------------------------------------------------------------
 
 export const usePaginatedMemeList = () => {
   // To understand how getNextPageParam and getPreviousPageParam work, please read:
@@ -36,20 +15,7 @@ export const usePaginatedMemeList = () => {
 
   return useSuspenseInfiniteQuery({
     queryKey: ["memes"],
-    queryFn: async ({ pageParam }) => {
-      const page = await getMemePage(token, pageParam);
-
-      return {
-        ...page,
-        results: await Promise.all(
-          page.results.map(async (meme) => {
-            const author = await cachedGetUser(token, meme.authorId);
-            const comments = await getCommentsWithAuthors(token, meme.id);
-            return { ...meme, author, comments };
-          }),
-        ),
-      };
-    },
+    queryFn: async ({ pageParam }) => await getMemePage(token, pageParam),
     initialPageParam: 1,
     getNextPageParam: (lastPage, _allPages, lastPageParam) => {
       if (lastPage.pageSize === 0) {
@@ -66,12 +32,37 @@ export const usePaginatedMemeList = () => {
   });
 };
 
-export const useCreateMemeComment = () => {
+export const useComments = (memeId: string) => {
+  const token = useAuthToken();
+
+  return useSuspenseQuery({
+    queryKey: ["memes", memeId, "comments"],
+    queryFn: async () => {
+      const firstPage = await getMemeComments(token, memeId, 1);
+      const pageCount = Math.ceil(firstPage.total / firstPage.pageSize);
+      const nextPages = await Promise.all(
+        Array.from({ length: pageCount - 1 }, (_, i) => 2 + i).map((i) =>
+          getMemeComments(token, memeId, i),
+        ),
+      );
+      return [firstPage, ...nextPages].flatMap((page) => page.results);
+    },
+  });
+};
+
+// ----------------------------------------------------------------------------
+// Mutations
+// ----------------------------------------------------------------------------
+
+export const useCreateMemeComment = (memeId: string) => {
   const token = useAuthToken();
 
   return useMutation({
     mutationFn: async (data: { memeId: string; content: string }) => {
       await createMemeComment(token, data.memeId, data.content);
+    },
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["memes", memeId, "comments"] });
     },
   });
 };

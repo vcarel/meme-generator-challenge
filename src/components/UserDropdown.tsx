@@ -1,11 +1,11 @@
 import { Avatar, Flex, Icon, Menu, MenuButton, MenuItem, MenuList, Text } from "@chakra-ui/react";
 import { CaretDown, CaretUp, SignOut } from "@phosphor-icons/react";
 import { useAuthentication } from "../helpers/authentication";
-import { useUser } from "../queries/user";
+import { useMe } from "../queries/user";
 
 export const UserDropdown: React.FC = () => {
   const { signout } = useAuthentication();
-  const { data: user } = useUser();
+  const { data: user } = useMe();
 
   return (
     <Menu>
