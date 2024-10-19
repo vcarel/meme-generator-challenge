@@ -11,11 +11,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { Plus, Trash } from "@phosphor-icons/react";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { Loader } from "../../components/Loader";
 import { MemeEditor } from "../../components/MemeEditor";
 import type { MemePictureProps } from "../../components/MemePicture";
+import { useCreateMeme } from "../../queries/meme";
 
 type Picture = {
   url: string;
@@ -25,6 +26,9 @@ type Picture = {
 function CreateMemePage() {
   const [picture, setPicture] = useState<Picture | null>(null);
   const [texts, setTexts] = useState<MemePictureProps["texts"]>([]);
+  const [description, setDescription] = useState("");
+  const { mutateAsync: createMeme, isPending } = useCreateMeme();
+  const navigate = useNavigate();
 
   const handleDrop = (file: File) => {
     setPicture({
@@ -46,6 +50,15 @@ function CreateMemePage() {
 
   const handleDeleteCaptionButtonClick = (index: number) => {
     setTexts(texts.filter((_, i) => i !== index));
+  };
+
+  const handleSubmit = async () => {
+    if (!picture) {
+      return; // This should never happen because the button is disabled when there is no picture
+    }
+
+    await createMeme({ description, picture: picture.file, texts });
+    await navigate({ to: "/" });
   };
 
   const memePicture = useMemo(() => {
@@ -73,7 +86,11 @@ function CreateMemePage() {
             <Heading as="h2" size="md" mb={2}>
               Describe your meme
             </Heading>
-            <Textarea placeholder="Type your description here..." />
+            <Textarea
+              placeholder="Type your description here..."
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
           </Box>
         </VStack>
       </Box>
@@ -116,6 +133,9 @@ function CreateMemePage() {
             width="full"
             color="white"
             isDisabled={memePicture === undefined}
+            isLoading={isPending}
+            type="button"
+            onClick={handleSubmit}
           >
             Submit
           </Button>

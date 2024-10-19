@@ -26,10 +26,10 @@ function renderError(error: Error) {
   return <FormErrorMessage>An unknown error occured, please try again later</FormErrorMessage>;
 }
 
-type Form = {
+interface Form {
   username: string;
   password: string;
-};
+}
 
 export const LoginPage: React.FC = () => {
   const { redirect } = Route.useSearch();

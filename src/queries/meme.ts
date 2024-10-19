@@ -1,5 +1,5 @@
 import { useMutation, useSuspenseInfiniteQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { createMemeComment, getMemeComments, getMemePage } from "../api";
+import { createMeme, createMemeComment, getMemeComments, getMemePage } from "../api";
 import { useAuthToken } from "../helpers/authentication";
 import { queryClient } from "./client";
 
@@ -63,6 +63,27 @@ export const useCreateMemeComment = (memeId: string) => {
     },
     onSuccess: async () => {
       await queryClient.refetchQueries({ queryKey: ["memes", memeId, "comments"] });
+    },
+  });
+};
+
+export const useCreateMeme = () => {
+  const token = useAuthToken();
+
+  return useMutation({
+    mutationFn: async (data: {
+      description: string;
+      picture: File;
+      texts: {
+        content: string;
+        x: number;
+        y: number;
+      }[];
+    }) => {
+      await createMeme(token, data.picture, data.description, data.texts);
+    },
+    onSuccess: async () => {
+      await queryClient.refetchQueries({ queryKey: ["memes"], exact: true });
     },
   });
 };

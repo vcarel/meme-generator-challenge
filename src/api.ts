@@ -93,9 +93,6 @@ export type GetMemesResponse = {
 
 /**
  * Get the list of memes for a given page
- * @param token
- * @param page
- * @returns
  */
 export async function getMemePage(token: string, page: number): Promise<GetMemesResponse> {
   return await fetch(`${BASE_URL}/memes?page=${page}`, {
@@ -120,9 +117,6 @@ export type GetMemeCommentsResponse = {
 
 /**
  * Get comments for a meme
- * @param token
- * @param memeId
- * @returns
  */
 export async function getMemeComments(
   token: string,
@@ -147,9 +141,6 @@ export type CreateCommentResponse = {
 
 /**
  * Create a comment for a meme
- * @param token
- * @param memeId
- * @param content
  */
 export async function createMemeComment(
   token: string,
@@ -163,5 +154,47 @@ export async function createMemeComment(
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify({ content }),
+  }).then((res) => checkStatus(res).json());
+}
+
+export type CreateMemeResponse = {
+  id: string;
+  authorId: string;
+  createdAt: string;
+  commentsCount: number;
+  description: string;
+  pictureUrl: string;
+  texts: string[];
+};
+
+/**
+ * Create a meme
+ */
+export async function createMeme(
+  token: string,
+  picture: File,
+  description: string,
+  texts: {
+    content: string;
+    x: number;
+    y: number;
+  }[],
+): Promise<CreateMemeResponse> {
+  const formData = new FormData();
+  formData.append("description", description);
+  formData.append("picture", picture);
+
+  for (const [index, text] of texts.entries()) {
+    formData.append(`texts[${index}][content]`, text.content);
+    formData.append(`texts[${index}][X]`, Math.round(text.x).toString());
+    formData.append(`texts[${index}][Y]`, Math.round(text.y).toString());
+  }
+
+  return await fetch(`${BASE_URL}/memes`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
   }).then((res) => checkStatus(res).json());
 }
